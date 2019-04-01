@@ -1,0 +1,50 @@
+Ansible, który przyda się potem:
+sudo yum install ansible
+vagrant ssh-config >~/.ssh/config		
+    //tutaj do pliku hosts dodaję linijkę:
+127.0.0.1 master node1 node2 node3 node4 
+//dzięki temu będę mógł (A raczej Ansible chociażby będzie mógł) zwracać się do maszyn po SSH po prostu Vagrant@node4 albo Vagrant@master
+Vagrant up		//uruchamiam cały klaster
+
+
+//Teraz posłużę się brudną zagrywką, i zainstaluję GITa na masterze – zamiast męczyć się z robieniem wszystkiego od zera, zaciągnę z repozytorium już gotowe playbooki Ansible i przetworzę je tak, żeby robiły to co mają zrobić. Tak będzie szybciej, a klienta raczej ucieszy że może mieć to samo, tylko szybciej. Przejrzałem te pliki, i wszystko zdało mi się w porządku.
+
+yum install git
+cat /etc/hosts
+    // zmieniam zawartość hosts
+10.0.0.10 master.kube master
+10.0.0.11 node1.kube node1
+10.0.0.12 node2.kube node2
+10.0.0.13 node3.kube node3
+10.0.0.14 node4.kube node4
+    //koniec zmian
+git clone https://github.com/learnitguide/kubernetes-and-ansible.git
+cd kubernetes-and-ansible/centos
+    //Zmieniam wartość w pliku hosts w folderze z repo, użyć można chociażby Vima ale ja preferuję nano
+Nano hosts
+    //Sama Zmiana
+[kubernetes-master-nodes]
+kubernetes-master.domena.pl ansible_host=10.0.0.10
+[kubernetes-worker-nodes]
+kubernetes-worker1.domena.pl ansible_host=10.0.0.11
+kubernetes-worker2.domena.pl ansible_host=10.0.0.12 
+kubernetes-worker3.domena.pl ansible_host=10.0.0.13
+kubernetes-worker4.domena.pl ansible_host=10.0.0.14
+ctrl+o enter ctrl+x
+nano env_variables
+    //Zmiana tylko dwóch wartości
+ad_addr: 10.0.0.1
+cidr_v: 10.0.0.0/16 		
+    //koniec zmian
+ssh-keygen
+//kluczyki SSH żeby nie musieć babrać się w hasłach
+ssh-copy-id -i /root/.ssh/id_rsa.pub root@node1.localhost
+ssh-copy-id -i /root/.ssh/id_rsa.pub root@node2.localhost
+ssh-copy-id -i /root/.ssh/id_rsa.pub root@node3.localhost
+ssh-copy-id -i /root/.ssh/id_rsa.pub root@node4.localhost
+    //Teraz pora wreszcie upichcić środowisko Ansiblem
+ansible-playbook settingup_kubernetes_cluster.yml
+ansible-playbook join_kubernetes_workers_nodes.yml
+
+//Całość można potem sprawdzić pod kątem ewentualnych czkawek
+kubectl get nodes
