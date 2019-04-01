@@ -11,13 +11,13 @@ yum -y install gcc make patch  dkms qt libgomp
 yum -y install kernel-headers kernel-devel fontforge binutils glibc-headers glibc-devel
 yum -y install VirtualBox-5.1
 wget https://releases.hashicorp.com/vagrant/2.2.4/vagrant_2.2.4_x86_64.rpm
-//Najnowszy na dzień dzisiejszy release Vagranta
+    //Najnowszy na dzień dzisiejszy release Vagranta
 yum -y localinstall vagrant_2.2.4_x86_64.rpm
 rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm 
-// Guest Additions Virtualboxa na pewno się przydadzą, lepiej dmuchać na zimne, więc lecimy z instalacją
+    // Guest Additions Virtualboxa na pewno się przydadzą, lepiej dmuchać na zimne, więc lecimy z instalacją
 yum install gcc kernel-devel kernel-headers dkms make bzip2 perl
 KERN_DIR=/usr/src/kernels/`uname -r`/build
 cd /media/VirtualBoxGuestAdditions
 ./VBoxLinuxAdditions.run
 Reboot		
-//I po starcie mamy już Guest Additions.
+    //I po starcie mamy już Guest Additions.
