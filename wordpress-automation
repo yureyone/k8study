@@ -1,0 +1,23 @@
+//A teraz można przejść do instalacji Wordpressa i potrzebnych mu zależności, począwszy od MySQLa i tak dalej…
+Z założenia  każdy człowiek pragnie być leniwy, 
+więc zamiast ręcznie wszystko majtać, użyję Helma – dublując lenistwo, 
+nie budując go ze źródła/kombinując, tylko używając dostarczonego przez nich skryptu.
+
+curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh
+chmod 700 get_helm.sh
+./get_helm.sh
+
+    //Helm potrzebuje kamrata, Tilera – zainstaluje go automatycznie po porozumieniu się z klastrem
+
+helm init
+
+    //A skoro mamy już jedno i drugie, to można tak:
+
+helm install stable/nfs-server-provisioner --set persistence.enabled=true,persistence.size=10Gi
+helm install --name swiezy-wordpress \
+  --set wordpressUsername=admin,wordpressPassword=password,mariadb.mariadbRootPassword=secretpassword,replicaCount=4 \
+    stable/wordpress
+
+//Dzięki temu, Helm sam zajmie się instalacją i prekonfiguracją czterech podów z Wordpressem,
+MySQL i Apache – włącznie z ustawieniem haseł. Na początku instaluje od razu provisioner NFS, żeby móc
+samodzielnie automatycznie skalować się do wyznaczonej ilości podów z Wordpressem.
